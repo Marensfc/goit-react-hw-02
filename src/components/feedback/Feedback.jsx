@@ -1,8 +1,10 @@
 import css from "./Feedback.module.css";
 
-const Feedback = ({ feedback: { good, neutral, bad }, totalFeedback }) => {
-  const positiveFeedback = Math.round((good / totalFeedback) * 100);
-
+const Feedback = ({
+  feedback: { good, neutral, bad },
+  totalFeedback,
+  positiveFeedback,
+}) => {
   return (
     <div className={css.feedbackContainer}>
       <p>Good: {good}</p>

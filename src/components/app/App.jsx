@@ -7,29 +7,32 @@ import Feedback from "../feedback/Feedback";
 import Notification from "../notification/Notification";
 
 function App() {
-  const [feedback, setFeedback] = useState({ good: 0, neutral: 0, bad: 0 });
-
-  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
-
-  useEffect(() => {
-    const savedFeedback = window.localStorage.getItem("saved-feedback");
+  const [feedback, setFeedback] = useState(() => {
+    const savedFeedback = window.localStorage.getItem("feedback");
 
     if (savedFeedback !== null) {
-      setFeedback(JSON.parse(savedFeedback));
+      return JSON.parse(savedFeedback);
     }
-  }, []);
+
+    return { good: 0, neutral: 0, bad: 0 };
+  });
+
+  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
+  const positiveFeedback = Math.round((feedback.good / totalFeedback) * 100);
+
+  useEffect(() => {
+    window.localStorage.setItem("feedback", JSON.stringify(feedback));
+  }, [feedback]);
 
   const updateFeedback = feedbackType => {
     setFeedback({
       ...feedback,
       [feedbackType]: (feedback[feedbackType] += 1),
     });
-    window.localStorage.setItem("saved-feedback", JSON.stringify(feedback));
   };
 
   const resetFeedback = () => {
     setFeedback({ good: 0, neutral: 0, bad: 0 });
-    window.localStorage.removeItem("saved-feedback");
   };
 
   return (
@@ -41,7 +44,11 @@ function App() {
         resetFeedback={resetFeedback}
       />
       {totalFeedback > 0 ? (
-        <Feedback feedback={feedback} totalFeedback={totalFeedback} />
+        <Feedback
+          feedback={feedback}
+          totalFeedback={totalFeedback}
+          positiveFeedback={positiveFeedback}
+        />
       ) : (
         <Notification />
       )}
